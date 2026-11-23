@@ -52,6 +52,7 @@ def main(debug=False):
     while executando:
         dt = min(relogio.tick(60) / 1000.0, 0.1)
         tempo_animacao += dt
+        temp_atual = temperatura_exibida if temperatura_exibida is not None else 0.0
 
         for evento in pygame.event.get():
             if evento.type in (pygame.QUIT, pygame.WINDOWCLOSE) or (
@@ -60,6 +61,7 @@ def main(debug=False):
                 executando = False
             if janela_debug is not None:
                 janela_debug.tratar_evento(evento)
+            particulas.tratar_evento(evento, temp_atual, faixa)
 
         if debug:
             leitor.atualizar(dt)
@@ -77,7 +79,8 @@ def main(debug=False):
 
         temperatura_fundo = temperatura_exibida if temperatura_exibida is not None else 0.0
         desenhar_gradiente(tela, temperatura_fundo, faixa)
-        particulas.atualizar(dt, temperatura_fundo, faixa)
+        pos_mouse = pygame.mouse.get_pos() if pygame.mouse.get_focused() else None
+        particulas.atualizar(dt, temperatura_fundo, faixa, pos_mouse)
         particulas.desenhar(tela)
 
         if temperatura_exibida is None:
